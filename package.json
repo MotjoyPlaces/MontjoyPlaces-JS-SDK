@@ -1,0 +1,43 @@
+{
+  "name": "montjoyplaces",
+  "version": "1.0.0",
+  "description": "Official JavaScript SDK for the Montjoy Places API.",
+  "license": "MIT",
+  "author": {
+    "name": "Montjoy",
+    "email": "paul@montjoyapp.com",
+    "url": "https://montjoyplaces.com"
+  },
+  "homepage": "https://montjoyplaces.com",
+  "bugs": {
+    "email": "paul@montjoyapp.com",
+    "url": "https://montjoyplaces.com"
+  },
+  "keywords": [
+    "montjoy",
+    "montjoyplaces",
+    "places",
+    "sdk",
+    "api"
+  ],
+  "type": "module",
+  "main": "./src/index.cjs",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.cjs",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "src",
+    "samples",
+    "README.md",
+    "LICENSE"
+  ]
+}
