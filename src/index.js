@@ -15,7 +15,7 @@ export class MontjoyPlaces {
       throw new Error("apiKey is required");
     }
 
-    const resolvedFetch = fetchImpl ?? globalThis.fetch;
+    const resolvedFetch = fetchImpl ?? globalThis.fetch?.bind(globalThis);
     if (typeof resolvedFetch !== "function") {
       throw new Error("A fetch implementation is required");
     }
@@ -23,6 +23,10 @@ export class MontjoyPlaces {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl.replace(/\/+$/, "");
     this.fetch = resolvedFetch;
+  }
+
+  listBillingPlans() {
+    return this.#request("GET", "/billing/plans");
   }
 
   whoAmI() {
@@ -67,6 +71,10 @@ export class MontjoyPlaces {
 
   hideCustomPlace(customPlaceId, body) {
     return this.#request("POST", `/v1/custom-places/${encodeURIComponent(customPlaceId)}/hide`, { body });
+  }
+
+  getPlace(placeId) {
+    return this.#request("GET", `/v1/places/${encodeURIComponent(placeId)}`);
   }
 
   overridePlace(fsqPlaceId, body) {

@@ -1,6 +1,25 @@
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 
+export interface PlanCatalogEntry {
+  code: string;
+  label: string;
+  monthlyRequests: number | null;
+  maxTenants: number | null;
+  maxApps: number | null;
+  maxApiKeys: number | null;
+  overageAllowed: boolean;
+  overageBlockRequests: number;
+  overageBlockPriceCents: number;
+  maxUsageMultiplier: number | null;
+  hardCapByDefault: boolean;
+}
+
+export interface BillingPlansResponse {
+  ok: boolean;
+  plans: PlanCatalogEntry[];
+}
+
 export interface WhoAmIResponse {
   ok: boolean;
   apiKeyId: string;
@@ -8,6 +27,32 @@ export interface WhoAmIResponse {
   appId: string;
   keyName: string;
   prefix: string;
+}
+
+export interface Place {
+  fsq_place_id: string;
+  place_source: "fsq" | "address";
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string | null;
+  locality: string | null;
+  region: string | null;
+  postcode: string | null;
+  country: string | null;
+  website: string | null;
+  tel: string | null;
+  email: string | null;
+  formatted_address: string | null;
+  geocode_provider: string | null;
+  geocode_confidence: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface PlaceSingleResponse {
+  ok: boolean;
+  row: Place | null;
 }
 
 export interface Group {
@@ -142,19 +187,27 @@ export type SearchRow = SearchRowGlobal | SearchRowCustom;
 export interface SearchResolvedCenter {
   lat: number;
   lon: number;
-  source: "request" | "locality";
+  source: "request" | "locality" | "address_cache" | "address_geocode";
   kind: string;
   label: string;
 }
 
 export interface SearchResolved {
-  mode: "nearby" | "typeahead" | "category";
+  mode: "address" | "nearby" | "typeahead" | "category";
   reason?: string;
   prefix?: string | null;
   categoryName?: string | null;
   groupId?: string | null;
   customOnly?: boolean | null;
   localityText?: string | null;
+  addressQuery?: string | null;
+  addressPlaceId?: string | null;
+  formattedAddress?: string | null;
+  geocodeProvider?: string | null;
+  geocodeCacheHit?: boolean | null;
+  addressRadiusMeters?: number | null;
+  addressCandidateCount?: number | null;
+  addressFilteredCount?: number | null;
   center?: SearchResolvedCenter;
 }
 
@@ -300,6 +353,7 @@ export interface SearchPlacesParams {
   forceTypeahead?: boolean;
   customOnly?: boolean;
   onlyCustom?: boolean;
+  isAddress?: boolean;
   groupId?: string | null;
 }
 
@@ -317,6 +371,7 @@ export class MontjoyPlacesError extends Error {
 
 export class MontjoyPlaces {
   constructor(options: MontjoyPlacesOptions);
+  listBillingPlans(): Promise<BillingPlansResponse>;
   whoAmI(): Promise<WhoAmIResponse>;
   listGroups(params?: ListGroupsParams): Promise<GroupsListResponse>;
   createGroup(body: GroupCreateRequest): Promise<GroupSingleResponse>;
@@ -328,6 +383,7 @@ export class MontjoyPlaces {
   updateCustomPlace(customPlaceId: string, body: CustomPlaceUpdateRequest): Promise<CustomPlaceSingleResponse>;
   deleteCustomPlace(customPlaceId: string): Promise<{ ok: boolean; deleted?: boolean }>;
   hideCustomPlace(customPlaceId: string, body: CustomPlaceHideRequest): Promise<CustomPlaceSingleResponse>;
+  getPlace(placeId: string): Promise<PlaceSingleResponse>;
   overridePlace(fsqPlaceId: string, body: OverrideRequest): Promise<OverrideResponse>;
   lookupNearestUsCities(params: LookupNearestUsCitiesParams): Promise<UsCityListResponse>;
   searchUsCities(params: SearchUsCitiesParams): Promise<UsCitySearchResponse>;

@@ -14,6 +14,9 @@ let groupId;
 let customPlaceId;
 
 try {
+  const plans = await client.listBillingPlans();
+  console.log("billing plans:", plans.plans.map((plan) => plan.code));
+
   const createdGroup = await client.createGroup({ name: groupName });
   groupId = createdGroup.row.group_id;
   console.log("created group:", createdGroup.row);
@@ -57,6 +60,16 @@ try {
     includeHidden: true
   });
   console.log("group custom places:", customPlaces.rows.map((row) => row.name));
+
+  const search = await client.searchPlaces({
+    q: "coffee near Boston MA",
+    limit: 3
+  });
+  const firstPlaceId = search.rows.find((row) => row._source === "global")?.fsq_place_id;
+  if (firstPlaceId) {
+    const place = await client.getPlace(firstPlaceId);
+    console.log("direct place lookup:", place.row);
+  }
 } finally {
   if (customPlaceId) {
     try {

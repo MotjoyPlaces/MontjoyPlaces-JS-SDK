@@ -1,6 +1,6 @@
 {
   "name": "@montjoyplaces/sdk",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Official JavaScript SDK for the Montjoy Places API.",
   "license": "MIT",
   "author": {
